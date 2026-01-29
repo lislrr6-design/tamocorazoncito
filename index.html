@@ -16,9 +16,7 @@ body{
   touch-action:none;
 }
 
-.oculto{
-  display:none !important;
-}
+.oculto{ display:none !important; }
 
 /* =================== INICIO =================== */
 #inicio{
@@ -123,12 +121,12 @@ button{
   max-width:90%;
 }
 
-/* 📱 AJUSTES SOLO PARA CELULAR */
+/* 📱 AJUSTE FINO PARA CELULAR */
 @media (max-width: 768px){
-  #personaje{ width:240px; }
-  .icono{ width:90px; }
-  #info{ font-size:20px; }
-  .vida{ width:32px; }
+  #personaje{ width:200px; }
+  .icono{ width:75px; }
+  #info{ font-size:18px; }
+  .vida{ width:28px; }
 }
 </style>
 </head>
@@ -173,6 +171,8 @@ button{
     Gracias por jugaaaar,<br>
     mi milanesitaa💘 <br>
     FELIIII SAN VALENTIN CORAZÓN
+    <br><br>
+    <button onclick="reiniciarDesdeFinal()">Jugar otra vez 💖</button>
   </div>
 </div>
 
@@ -249,7 +249,7 @@ function mostrarMensaje(txt){
 let intervaloIconos;
 
 function iniciarJuego(){
-  intervaloIconos=setInterval(crearIcono,650);
+  intervaloIconos=setInterval(crearIcono,700);
 }
 
 function crearIcono(){
@@ -261,7 +261,7 @@ function crearIcono(){
   img.src="img/"+tipo+".png";
 
   if(tipo==="trampa3"){
-    img.style.width="95px";
+    img.style.width="90px";
   }
 
   img.style.left=Math.random()*(window.innerWidth-60)+"px";
@@ -269,7 +269,7 @@ function crearIcono(){
   document.body.appendChild(img);
 
   let y=-60;
-  let velocidad = window.innerWidth < 768 ? 8 : (tipo.includes("trampa") ? 7 : 4);
+  let velocidad = window.innerWidth < 768 ? 6 : (tipo.includes("trampa") ? 7 : 4);
 
   const caer=setInterval(()=>{
     y+=velocidad;
@@ -293,7 +293,7 @@ function crearIcono(){
 
 function atrapar(tipo){
   click();
-  if(tipo==="mapache"&&m<3){ m++; if(m===3&&!msgM){ mostrarMensaje(" Me encantas mi niño lindo"); msgM=true; }}
+  if(tipo==="mapache"&&m<3){ m++; if(m===3&&!msgM){ mostrarMensaje("Me encantas mi niño lindo"); msgM=true; }}
   if(tipo==="pibble"&&p<3){ p++; if(p===3&&!msgP){ mostrarMensaje("🐶 Te amo mil millones"); msgP=true; }}
   if(tipo==="spiderman"&&s<3){ s++; if(s===3&&!msgS){ mostrarMensaje("🕷️ Eressh mi lugar seguro"); msgS=true; }}
 
@@ -324,6 +324,19 @@ function reiniciarJuego(){
   vidasImg.forEach(v=>v.style.display="inline");
   m=p=s=0;
   mSpan.innerText=pSpan.innerText=sSpan.innerText=0;
+  musica.play();
+  iniciarJuego();
+}
+
+function reiniciarDesdeFinal(){
+  final.classList.add("oculto");
+  zonaJuego.style.display="block";
+  vidas=3;
+  vidasImg.forEach(v=>v.style.display="inline");
+  m=p=s=0;
+  mSpan.innerText=pSpan.innerText=sSpan.innerText=0;
+  msgM=msgP=msgS=false;
+  musica.currentTime=0;
   musica.play();
   iniciarJuego();
 }
