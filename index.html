@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Para ti 💖</title>
 
 <style>
@@ -121,6 +122,14 @@ button{
   text-align:center;
   max-width:90%;
 }
+
+/* 📱 AJUSTES SOLO PARA CELULAR */
+@media (max-width: 768px){
+  #personaje{ width:240px; }
+  .icono{ width:90px; }
+  #info{ font-size:20px; }
+  .vida{ width:32px; }
+}
 </style>
 </head>
 
@@ -176,7 +185,6 @@ button{
 </div>
 
 <script>
-/* ===== REFERENCIAS QUE FALTABAN ===== */
 const inicio=document.getElementById("inicio");
 const zonaJuego=document.getElementById("zonaJuego");
 const final=document.getElementById("final");
@@ -185,7 +193,6 @@ const musica=document.getElementById("musica");
 const win=document.getElementById("win");
 const mensajeJuego=document.getElementById("mensajeJuego");
 
-/* ===== SONIDOS ===== */
 const clickSound=document.getElementById("click");
 const hitSound=document.getElementById("hit");
 const gameoverSound=document.getElementById("gameoverSound");
@@ -205,7 +212,6 @@ function aceptar(){
   iniciarJuego();
 }
 
-/* =================== JUEGO =================== */
 let m=0,p=0,s=0;
 let msgM=false,msgP=false,msgS=false;
 let vidas=3;
@@ -243,7 +249,7 @@ function mostrarMensaje(txt){
 let intervaloIconos;
 
 function iniciarJuego(){
-  intervaloIconos=setInterval(crearIcono,900);
+  intervaloIconos=setInterval(crearIcono,650);
 }
 
 function crearIcono(){
@@ -253,16 +259,17 @@ function crearIcono(){
   const img=document.createElement("img");
   img.className="icono";
   img.src="img/"+tipo+".png";
-  if(tipo === "trampa3"){
-  img.style.width = "95px"; // prueba 85–110px
-}
+
+  if(tipo==="trampa3"){
+    img.style.width="95px";
+  }
 
   img.style.left=Math.random()*(window.innerWidth-60)+"px";
   img.style.top="-60px";
   document.body.appendChild(img);
 
   let y=-60;
-  let velocidad=tipo.includes("trampa")?7:4;
+  let velocidad = window.innerWidth < 768 ? 8 : (tipo.includes("trampa") ? 7 : 4);
 
   const caer=setInterval(()=>{
     y+=velocidad;
