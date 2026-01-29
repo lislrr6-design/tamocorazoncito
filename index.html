@@ -1,7 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Para ti 💖</title>
+
+<style>
+body{
+  margin:0;
+  font-family:'Courier New', monospace;
+  color:white;
+  overflow:hidden;
+  background:url("img/atardecer.png") no-repeat center center fixed;
+  background-size:cover;
+  touch-action:none;
+}
+
+.oculto{ display:none !important; }
+
+/* =================== INICIO =================== */
+#inicio{
+  position:fixed;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  background:rgba(0,0,0,0.4);
+}
+
+#inicio img{
+  width:220px;
+  border-radius:25px;
+  margin-bottom:20px;
+}
+
+button{
+  font-size:18px;
+  padding:10px 22px;
+  border:none;
+  border-radius:15px;
+  cursor:pointer;
+  margin:10px;
+}
+
+#si{ background:#ff5fa2; color:white; }
+#no{ background:#555; color:white; position:absolute; }
+
+/* =================== JUEGO =================== */
+#zonaJuego{
+  position:fixed;
+  inset:0;
+}
+
+#info{
+  position:fixed;
+  top:10px;
+  left:10px;
+  background:rgba(0,0,0,0.5);
+  padding:10px 14px;
+  border-radius:15px;
+  font-size:16px;
+}
+
+/* ❤️ VIDAS */
+#vidas{ margin-bottom:10px; }
+.vida{ width:25px; margin-right:4px; }
+
+#mensajeJuego{
+  position:fixed;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  background:rgba(0,0,0,0.6);
+  padding:18px 22px;
+  border-radius:18px;
+  font-size:18px;
+  display:none;
+  text-align:center;
+  z-index:50;
+}
+
+/* =================== PERSONAJE =================== */
+#personaje{
+  position:fixed;
+  bottom:20px;
+  width:180px;
+  z-index:10;
+  touch-action:none;
+  user-select:none;
+  -webkit-user-drag:none;
+}
+
+/* ICONOS */
+.icono{
+  position:fixed;
+  width:70px;
+  z-index:7;
+}
+
+/* =================== FINAL =================== */
+#final, #gameOver{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.7);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:999;
+}
+
+.cajaFinal{
+  background:rgba(0,0,0,0.6);
+  padding:30px 25px;
+  border-radius:25px;
+  font-size:24px;
+  text-align:center;
+  max-width:90%;
+}
+
+/* 📱 CELULAR */
+@media (max-width:768px){
+  #personaje{ width:200px; }
+  .icono{ width:75px; }
+  #info{ font-size:18px; }
+  .vida{ width:28px; }
+}
+</style>
+</head>
+
+<body>
+
+<audio id="click" src="click.mp3"></audio>
+<audio id="musica" src="musica.mpeg" loop></audio>
+<audio id="win" src="win.mp3"></audio>
+<audio id="hit" src="hit.mp3"></audio>
+<audio id="gameoverSound" src="gameover.mp3"></audio>
+
+<div id="inicio">
+  <img src="img/snoopy.png">
+  <p>Desliza para jugar 💕<br>¿Quieres jugaaar?</p>
+  <button id="si" onclick="aceptar()">Chii 💖</button>
+  <button id="no" onmouseover="huir()">No, nuncaa</button>
+</div>
+
+<div id="zonaJuego" class="oculto">
+  <div id="info">
+    <div id="vidas">
+      <img class="vida" src="img/corazon.png">
+      <img class="vida" src="img/corazon.png">
+      <img class="vida" src="img/corazon.png">
+    </div>
+    🦝 <span id="m">0</span>/3<br>
+    🐶 <span id="p">0</span>/3<br>
+    🕷️ <span id="s">0</span>/3
+  </div>
+
+  <div id="mensajeJuego"></div>
+  <img id="personaje" src="img/personaje.png">
+</div>
+
+<div id="final" class="oculto">
+  <div class="cajaFinal">
+    💖✨<br>
+    TE AMO DEMASIADO,<br>
+    MÁS DE LO QUE PUEDAS IMAGINAR.
+    <br><br>
+    Gracias por jugar,<br>
+    mi milanesita 💘
+    <br><br>
+    <button onclick="reiniciarDesdeFinal()">Jugar otra vez 💖</button>
+  </div>
+</div>
+
+<div id="gameOver" class="oculto">
+  <div class="cajaFinal">
+    💀 GAME OVER 💀<br><br>
+    Inténtalo otra vez 💖<br><br>
+    <button onclick="reiniciarJuego()">Reintentar</button>
+  </div>
+</div>
+
 <script>
 const inicio=document.getElementById("inicio");
 const zonaJuego=document.getElementById("zonaJuego");
-const final=document.getElementById("final");
+const finalPantalla=document.getElementById("final");
 const gameOverDiv=document.getElementById("gameOver");
 const musica=document.getElementById("musica");
 const win=document.getElementById("win");
@@ -10,6 +194,7 @@ const mensajeJuego=document.getElementById("mensajeJuego");
 const clickSound=document.getElementById("click");
 const hitSound=document.getElementById("hit");
 const gameoverSound=document.getElementById("gameoverSound");
+const no=document.getElementById("no");
 
 function click(){ clickSound.play(); }
 
@@ -36,11 +221,9 @@ const pSpan=document.getElementById("p");
 const sSpan=document.getElementById("s");
 const personaje=document.getElementById("personaje");
 
-/* ===== MOVIMIENTO CORREGIDO ===== */
-let anchoPersonaje = personaje.offsetWidth;
-let posX = (window.innerWidth - anchoPersonaje) / 2;
-personaje.style.left = posX + "px";
-
+let anchoPersonaje=personaje.offsetWidth;
+let posX=(window.innerWidth-anchoPersonaje)/2;
+personaje.style.left=posX+"px";
 let arrastrando=false;
 
 personaje.addEventListener("pointerdown",e=>{
@@ -50,17 +233,9 @@ personaje.addEventListener("pointerdown",e=>{
 
 document.addEventListener("pointermove",e=>{
   if(!arrastrando) return;
-
-  let ancho = personaje.offsetWidth;
-  posX = e.clientX - ancho/2;
-
-  const margen = 15;
-  posX = Math.max(
-    margen,
-    Math.min(window.innerWidth - ancho - margen, posX)
-  );
-
-  personaje.style.left = posX + "px";
+  posX=e.clientX-anchoPersonaje/2;
+  posX=Math.max(10,Math.min(window.innerWidth-anchoPersonaje-10,posX));
+  personaje.style.left=posX+"px";
 });
 
 document.addEventListener("pointerup",()=>arrastrando=false);
@@ -84,23 +259,14 @@ function crearIcono(){
   const img=document.createElement("img");
   img.className="icono";
   img.src="img/"+tipo+".png";
+  if(tipo==="trampa3") img.style.width="90px";
 
-  if(tipo==="trampa3"){
-    img.style.width="90px";
-  }
-
-  /* ===== ICONOS CON MÁRGENES ===== */
-  const margen = window.innerWidth < 768 ? 50 : 0;
-  img.style.left =
-    margen +
-    Math.random()*(window.innerWidth - 60 - margen*2) +
-    "px";
-
+  img.style.left=Math.random()*(window.innerWidth-80)+"px";
   img.style.top="-60px";
   document.body.appendChild(img);
 
   let y=-60;
-  let velocidad = window.innerWidth < 768 ? 6 : (tipo.includes("trampa") ? 7 : 4);
+  let velocidad=window.innerWidth<768?6:(tipo.includes("trampa")?7:4);
 
   const caer=setInterval(()=>{
     y+=velocidad;
@@ -109,15 +275,10 @@ function crearIcono(){
     const rI=img.getBoundingClientRect();
     const rP=personaje.getBoundingClientRect();
 
-    /* ===== COLISIÓN MÁS JUSTA ===== */
-    if(
-      rI.bottom >= rP.top + 15 &&
-      rI.left < rP.right - 15 &&
-      rI.right > rP.left + 15
-    ){
+    if(rI.bottom>=rP.top+10 && rI.left<rP.right-10 && rI.right>rP.left+10){
       img.remove();
       clearInterval(caer);
-      tipo.includes("trampa") ? perderVida() : atrapar(tipo);
+      tipo.includes("trampa")?perderVida():atrapar(tipo);
     }
 
     if(y>window.innerHeight){
@@ -129,9 +290,9 @@ function crearIcono(){
 
 function atrapar(tipo){
   click();
-  if(tipo==="mapache"&&m<3){ m++; if(m===3&&!msgM){ mostrarMensaje("Me encantas mi niño lindo"); msgM=true; }}
-  if(tipo==="pibble"&&p<3){ p++; if(p===3&&!msgP){ mostrarMensaje("🐶 Te amo mil millones"); msgP=true; }}
-  if(tipo==="spiderman"&&s<3){ s++; if(s===3&&!msgS){ mostrarMensaje("🕷️ Eressh mi lugar seguro"); msgS=true; }}
+  if(tipo==="mapache"&&m<3){m++; if(m===3&&!msgM){mostrarMensaje("Me encantas mi niño lindo"); msgM=true;}}
+  if(tipo==="pibble"&&p<3){p++; if(p===3&&!msgP){mostrarMensaje("🐶 Te amo mil millones"); msgP=true;}}
+  if(tipo==="spiderman"&&s<3){s++; if(s===3&&!msgS){mostrarMensaje("🕷️ Eres mi lugar seguro"); msgS=true;}}
 
   mSpan.innerText=m;
   pSpan.innerText=p;
@@ -165,7 +326,7 @@ function reiniciarJuego(){
 }
 
 function reiniciarDesdeFinal(){
-  final.classList.add("oculto");
+  finalPantalla.classList.add("oculto");
   zonaJuego.style.display="block";
   vidas=3;
   vidasImg.forEach(v=>v.style.display="inline");
@@ -180,7 +341,7 @@ function reiniciarDesdeFinal(){
 function ganar(){
   clearInterval(intervaloIconos);
   zonaJuego.style.display="none";
-  final.classList.remove("oculto");
+  finalPantalla.classList.remove("oculto");
   musica.pause();
   win.play();
 }
@@ -188,4 +349,6 @@ function ganar(){
 
 </body>
 </html>
+
+
 
